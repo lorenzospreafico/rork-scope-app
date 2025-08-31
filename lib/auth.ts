@@ -141,3 +141,14 @@ export async function createRecurringActivity({
   if (error) throw error
   return data
 }
+
+export async function completeWorkout(workoutId: string) {
+  const { data, error } = await supabase
+    .from('workouts')
+    .update({ status: 'completed' })
+    .eq('id', workoutId)
+    .select().single()
+  
+  if (error) throw error
+  return data
+}
