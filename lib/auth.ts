@@ -112,3 +112,32 @@ export async function createWorkout({
   if (error) throw error
   return data
 }
+
+export async function createRecurringActivity({
+  title,
+  pillar,
+  day_of_week,
+  duration_min,
+  details
+}: {
+  title: string
+  pillar: Pillar
+  day_of_week: number // 0-6
+  duration_min: number
+  details?: { location?: string }
+}) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not logged in')
+
+  const { data, error } = await supabase.from('recurring_activities').insert({
+    user_id: user.id,
+    title,
+    pillar,
+    day_of_week,
+    duration_min,
+    details
+  }).select().single()
+  
+  if (error) throw error
+  return data
+}
