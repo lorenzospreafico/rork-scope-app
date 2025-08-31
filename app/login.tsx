@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
@@ -24,7 +24,14 @@ export default function LoginScreen() {
     
     try {
       await signIn(email.trim(), password.trim());
-      router.replace('/(tabs)/dashboard');
+      // Add delay for Android to ensure auth state is updated
+      if (Platform.OS === 'android') {
+        setTimeout(() => {
+          router.replace('/(tabs)/dashboard' as any);
+        }, 200);
+      } else {
+        router.replace('/(tabs)/dashboard' as any);
+      }
     } catch (error: any) {
       console.log('Sign in error:', error);
       Alert.alert('Error', error.message || 'Failed to sign in');

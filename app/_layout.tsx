@@ -1,7 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import React, { useEffect, Component, ReactNode } from "react";
+import { Platform, View, Text } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { TrainingProvider } from "@/hooks/training-store";
 import { ThemeProvider } from "@/hooks/theme-store";
@@ -9,7 +10,54 @@ import { AuthProvider } from "@/hooks/auth-store";
 
 SplashScreen.preventAutoHideAsync();
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: Platform.OS === 'android' ? 3 : 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    },
+  },
+});
+
+// Error Boundary for catching rendering issues
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    console.log('🚨 Error Boundary caught error:', error);
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.log('🚨 Error Boundary details:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10, color: '#FF6B35' }}>
+            Something went wrong
+          </Text>
+          <Text style={{ fontSize: 14, textAlign: 'center', color: '#666' }}>
+            {this.state.error?.message || 'An unexpected error occurred'}
+          </Text>
+          <Text style={{ fontSize: 12, marginTop: 10, color: '#999' }}>
+            Platform: {Platform.OS}
+          </Text>
+        </View>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 function RootLayoutNav() {
   return (
@@ -26,11 +74,14 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   useEffect(() => {
-    console.log('🏠 Root layout mounting...');
+    console.log('🏠 Root layout mounting...', Platform.OS);
+    
+    // Platform-specific splash screen timing
+    const delay = Platform.OS === 'android' ? 1500 : 1000;
     const timer = setTimeout(() => {
       console.log('🏠 Hiding splash screen...');
-      SplashScreen.hideAsync();
-    }, 1000);
+      SplashScreen.hideAsync().catch(console.warn);
+    }, delay);
     
     return () => clearTimeout(timer);
   }, []);
@@ -38,16 +89,18 @@ export default function RootLayout() {
   console.log('🏠 Rendering root layout...');
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider>
-          <TrainingProvider>
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <RootLayoutNav />
-            </GestureHandlerRootView>
-          </TrainingProvider>
-        </ThemeProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ThemeProvider>
+            <TrainingProvider>
+              <GestureHandlerRootView style={{ flex: 1 }}>
+                <RootLayoutNav />
+              </GestureHandlerRootView>
+            </TrainingProvider>
+          </ThemeProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

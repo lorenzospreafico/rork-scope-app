@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 import createContextHook from '@nkzw/create-context-hook';
 
 export interface Theme {
@@ -62,7 +63,13 @@ export const [ThemeProvider, useTheme] = createContextHook(() => {
 
   const loadThemePreference = async () => {
     try {
-      console.log('🎨 Loading theme preference...');
+      console.log('🎨 Loading theme preference...', Platform.OS);
+      
+      // Add delay for Android to ensure AsyncStorage is ready
+      if (Platform.OS === 'android') {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
       const stored = await AsyncStorage.getItem(THEME_STORAGE_KEY);
       if (stored !== null) {
         const parsedTheme = JSON.parse(stored);

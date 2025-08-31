@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
@@ -25,7 +25,14 @@ export default function SignUpScreen() {
     
     try {
       await signUp(name.trim(), email.trim(), password.trim());
-      router.replace('/onboarding');
+      // Add delay for Android to ensure auth state is updated
+      if (Platform.OS === 'android') {
+        setTimeout(() => {
+          router.replace('/onboarding' as any);
+        }, 200);
+      } else {
+        router.replace('/onboarding' as any);
+      }
     } catch (error: any) {
       console.log('Sign up error:', error);
       Alert.alert('Error', error.message || 'Failed to create account');

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, Switch } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, Switch, Platform } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChevronRight, User, Calendar, Target, RefreshCw, TrendingUp, Moon, Sun, LogOut } from 'lucide-react-native';
@@ -57,7 +57,14 @@ export default function SettingsScreen() {
           onPress: async () => {
             try {
               await signOut();
-              router.replace('/login');
+              // Add delay for Android to ensure auth state is updated
+              if (Platform.OS === 'android') {
+                setTimeout(() => {
+                  router.replace('/login' as any);
+                }, 200);
+              } else {
+                router.replace('/login' as any);
+              }
             } catch (error: any) {
               Alert.alert('Error', error.message || 'Failed to sign out');
             }
