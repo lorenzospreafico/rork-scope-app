@@ -57,3 +57,20 @@ export async function saveOnboarding(
     return plan.id
   }
 }
+
+export async function generatePlan(plan_id: string) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not logged in')
+  const resp = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate_plan`, {
+    method: 'POST',
+    headers: {
+      'Content-Type':'application/json',
+      // IMPORTANT: Relay the auth token so the function can validate (optional for v1)
+      Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+    },
+    body: JSON.stringify({ user_id: user.id, plan_id })
+  })
+  const json = await resp.json()
+  if (!resp.ok) throw new Error(json.error || 'Plan generation failed')
+  return json
+}
