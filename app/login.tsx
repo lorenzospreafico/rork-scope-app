@@ -3,20 +3,19 @@ import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Aler
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
-import { useAuth } from '@/hooks/auth-store';
 import { useTheme } from '@/hooks/theme-store';
+import { useAuth } from '@/hooks/auth-store';
 
-export default function SignUpScreen() {
-  const { signUp } = useAuth();
+export default function LoginScreen() {
+  const { signIn } = useAuth();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSignUp = async () => {
-    if (!email.trim() || !password.trim() || !name.trim()) {
+  const handleSignIn = async () => {
+    if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -24,18 +23,18 @@ export default function SignUpScreen() {
     setIsLoading(true);
     
     try {
-      await signUp(name.trim(), email.trim(), password.trim());
-      router.replace('/onboarding');
+      await signIn(email.trim(), password.trim());
+      router.replace('/(tabs)');
     } catch (error: any) {
-      console.log('Sign up error:', error);
-      Alert.alert('Error', error.message || 'Failed to create account');
+      console.log('Sign in error:', error);
+      Alert.alert('Error', error.message || 'Failed to sign in');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSignIn = () => {
-    router.push('/login');
+  const handleSignUp = () => {
+    router.push('/signup');
   };
 
   return (
@@ -44,27 +43,10 @@ export default function SignUpScreen() {
         <View style={[styles.content, { paddingTop: insets.top + 40 }]}>
           <View style={styles.header}>
             <Text style={[styles.brandName, { color: '#ffffff' }]}>Scope</Text>
-            <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Your personalized training companion</Text>
+            <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>Welcome back</Text>
           </View>
 
           <View style={styles.form}>
-            <View style={styles.inputContainer}>
-              <Text style={[styles.label, { color: theme.colors.text }]}>Full Name</Text>
-              <TextInput
-                style={[styles.input, { 
-                  backgroundColor: theme.colors.surface,
-                  borderColor: theme.colors.border,
-                  color: theme.colors.text
-                }]}
-                value={name}
-                onChangeText={setName}
-                placeholder="Enter your full name"
-                placeholderTextColor={theme.colors.textSecondary}
-                autoCapitalize="words"
-                testID="name-input"
-              />
-            </View>
-
             <View style={styles.inputContainer}>
               <Text style={[styles.label, { color: theme.colors.text }]}>Email</Text>
               <TextInput
@@ -94,7 +76,7 @@ export default function SignUpScreen() {
                 }]}
                 value={password}
                 onChangeText={setPassword}
-                placeholder="Create a password"
+                placeholder="Enter your password"
                 placeholderTextColor={theme.colors.textSecondary}
                 secureTextEntry
                 testID="password-input"
@@ -102,10 +84,10 @@ export default function SignUpScreen() {
             </View>
 
             <Button
-              title={isLoading ? "Creating Account..." : "Create Account"}
-              onPress={handleSignUp}
+              title={isLoading ? "Signing In..." : "Sign In"}
+              onPress={handleSignIn}
               disabled={isLoading}
-              style={[styles.signUpButton, { borderWidth: 2, borderColor: theme.colors.accent }]}
+              style={[styles.signInButton, { borderWidth: 2, borderColor: theme.colors.accent }]}
             />
 
             <View style={styles.divider}>
@@ -115,11 +97,11 @@ export default function SignUpScreen() {
             </View>
 
             <TouchableOpacity
-              style={styles.signInButton}
-              onPress={handleSignIn}
-              testID="signin-button"
+              style={styles.signUpButton}
+              onPress={handleSignUp}
+              testID="signup-button"
             >
-              <Text style={[styles.signInText, { color: theme.colors.text }]}>Already have an account? Sign In</Text>
+              <Text style={[styles.signUpText, { color: theme.colors.text }]}>Don&apos;t have an account? Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -172,7 +154,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
   },
-  signUpButton: {
+  signInButton: {
     marginTop: 8,
     marginBottom: 24,
   },
@@ -189,11 +171,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     fontSize: 14,
   },
-  signInButton: {
+  signUpButton: {
     alignItems: 'center',
     paddingVertical: 12,
   },
-  signInText: {
+  signUpText: {
     fontSize: 16,
     fontWeight: '500',
   },
