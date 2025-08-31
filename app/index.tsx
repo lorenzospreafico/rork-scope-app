@@ -26,7 +26,7 @@ export default function IndexScreen() {
         try {
           if (isAuthenticated) {
             console.log('✅ User authenticated, navigating to dashboard');
-            router.replace('/(tabs)/dashboard');
+            router.replace('/dashboard');
           } else {
             console.log('❌ User not authenticated, navigating to login');
             router.replace('/login');
@@ -38,7 +38,7 @@ export default function IndexScreen() {
           setTimeout(() => {
             try {
               if (isAuthenticated) {
-                router.push('/(tabs)/dashboard');
+                router.push('/dashboard');
               } else {
                 router.push('/login');
               }
@@ -73,7 +73,7 @@ export default function IndexScreen() {
         </Text>
         <Text style={[styles.errorText, { color: theme.colors.textSecondary }]}>
           {Platform.OS === 'android' 
-            ? 'Having trouble connecting. This might be due to network issues or app updates.'
+            ? 'Having trouble connecting. This might be due to network issues or remote update failures. Try continuing to the app directly.'
             : 'Unable to load the app properly.'}
         </Text>
         <View style={styles.buttonContainer}>

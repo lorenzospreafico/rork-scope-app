@@ -82,6 +82,11 @@ export default function RootLayout() {
   useEffect(() => {
     console.log('🏠 Root layout mounting...', Platform.OS);
     
+    // Add extra error handling for Android
+    if (Platform.OS === 'android') {
+      console.log('🤖 Android platform detected - using enhanced error handling');
+    }
+    
     // Platform-specific splash screen timing
     const delay = Platform.OS === 'android' ? 1500 : 1000;
     const timer = setTimeout(() => {

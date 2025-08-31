@@ -27,10 +27,10 @@ export default function LoginScreen() {
       // Add delay for Android to ensure auth state is updated
       if (Platform.OS === 'android') {
         setTimeout(() => {
-          router.replace('/(tabs)/dashboard');
+          router.replace('/dashboard');
         }, 200);
       } else {
-        router.replace('/(tabs)/dashboard');
+        router.replace('/dashboard');
       }
     } catch (error: any) {
       console.log('Sign in error:', error);
@@ -47,7 +47,7 @@ export default function LoginScreen() {
   const handleSkip = () => {
     console.log('Skipping login - going directly to app');
     // Use push instead of replace to ensure navigation works
-    router.push('/(tabs)/dashboard');
+    router.push('/dashboard');
   };
 
   return (
