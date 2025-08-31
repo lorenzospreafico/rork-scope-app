@@ -28,8 +28,10 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
 
   const refreshAuth = useCallback(async () => {
     try {
+      console.log('🔄 Refreshing auth state...');
       setState(prev => ({ ...prev, isLoading: true }));
       const [user, session] = await Promise.all([getCurrentUser(), getSession()]);
+      console.log('👤 Auth refresh result:', { user: user?.id, session: !!session });
       setState({
         user,
         session,
@@ -37,7 +39,7 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
         isAuthenticated: !!user,
       });
     } catch (error) {
-      console.log('Auth refresh error:', error);
+      console.log('❌ Auth refresh error:', error);
       setState({
         user: null,
         session: null,

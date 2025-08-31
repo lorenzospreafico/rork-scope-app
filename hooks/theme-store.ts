@@ -62,15 +62,21 @@ export const [ThemeProvider, useTheme] = createContextHook(() => {
 
   const loadThemePreference = async () => {
     try {
+      console.log('🎨 Loading theme preference...');
       const stored = await AsyncStorage.getItem(THEME_STORAGE_KEY);
       if (stored !== null) {
-        setIsDark(JSON.parse(stored));
+        const parsedTheme = JSON.parse(stored);
+        console.log('🎨 Loaded theme from storage:', parsedTheme);
+        setIsDark(parsedTheme);
       } else {
+        console.log('🎨 No theme in storage, defaulting to dark mode');
         // Default to dark mode
         setIsDark(true);
       }
     } catch (error) {
-      console.log('Error loading theme preference:', error);
+      console.log('❌ Error loading theme preference:', error);
+      // Fallback to dark mode on error
+      setIsDark(true);
     } finally {
       setIsLoading(false);
     }

@@ -26,8 +26,16 @@ function RootLayoutNav() {
 
 export default function RootLayout() {
   useEffect(() => {
-    SplashScreen.hideAsync();
+    console.log('🏠 Root layout mounting...');
+    const timer = setTimeout(() => {
+      console.log('🏠 Hiding splash screen...');
+      SplashScreen.hideAsync();
+    }, 1000);
+    
+    return () => clearTimeout(timer);
   }, []);
+
+  console.log('🏠 Rendering root layout...');
 
   return (
     <QueryClientProvider client={queryClient}>

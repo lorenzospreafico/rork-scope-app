@@ -24,14 +24,23 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
 
   const loadData = async () => {
     try {
+      console.log('🏋️ Loading training data...');
       const [profileData, planData, authData] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.USER_PROFILE),
         AsyncStorage.getItem(STORAGE_KEYS.TRAINING_PLAN),
         AsyncStorage.getItem(STORAGE_KEYS.IS_AUTHENTICATED),
       ]);
 
+      console.log('🏋️ Training data loaded:', { 
+        hasProfile: !!profileData, 
+        hasPlan: !!planData, 
+        hasAuth: !!authData 
+      });
+
       if (authData) {
-        setIsAuthenticated(JSON.parse(authData));
+        const authValue = JSON.parse(authData);
+        console.log('🏋️ Training auth state:', authValue);
+        setIsAuthenticated(authValue);
       }
       if (profileData) {
         const profile = JSON.parse(profileData);
@@ -39,13 +48,16 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
         if (!profile.manualActivities) {
           profile.manualActivities = [];
         }
+        console.log('🏋️ User profile loaded:', profile.fullName);
         setUserProfile(profile);
       }
       if (planData) {
-        setTrainingPlan(JSON.parse(planData));
+        const plan = JSON.parse(planData);
+        console.log('🏋️ Training plan loaded:', plan.name);
+        setTrainingPlan(plan);
       }
     } catch (error) {
-      console.error('Error loading training data:', error);
+      console.error('❌ Error loading training data:', error);
     } finally {
       setIsLoading(false);
     }

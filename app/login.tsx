@@ -24,7 +24,7 @@ export default function LoginScreen() {
     
     try {
       await signIn(email.trim(), password.trim());
-      router.replace('/dashboard');
+      router.replace('/(tabs)/dashboard');
     } catch (error: any) {
       console.log('Sign in error:', error);
       Alert.alert('Error', error.message || 'Failed to sign in');

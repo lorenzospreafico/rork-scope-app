@@ -78,7 +78,7 @@ export async function saveOnboarding(
 export async function generatePlan(plan_id: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Not logged in')
-  const resp = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/generate_plan`, {
+  const resp = await fetch(`https://bhagegnikobkzntjugwa.supabase.co/functions/v1/generate_plan`, {
     method: 'POST',
     headers: {
       'Content-Type':'application/json',
