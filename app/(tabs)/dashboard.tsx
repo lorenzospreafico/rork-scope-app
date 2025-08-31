@@ -32,9 +32,9 @@ export default function DashboardScreen() {
 
   useEffect(() => {
     if (!isLoading) {
-      if (!isAuthenticated) {
-        router.replace('/login');
-      } else if (!userProfile?.onboardingCompleted) {
+      // Allow access to dashboard even without authentication (skip mode)
+      // Only redirect to onboarding if user profile exists but onboarding is not completed
+      if (userProfile && !userProfile.onboardingCompleted) {
         router.replace('/onboarding');
       } else if (shouldShowWeeklyCheckIn()) {
         const timer = setTimeout(() => {
@@ -43,7 +43,7 @@ export default function DashboardScreen() {
         return () => clearTimeout(timer);
       }
     }
-  }, [isLoading, isAuthenticated, userProfile, shouldShowWeeklyCheckIn]);
+  }, [isLoading, userProfile, shouldShowWeeklyCheckIn]);
 
   if (isLoading) {
     return (

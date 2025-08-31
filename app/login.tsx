@@ -46,7 +46,8 @@ export default function LoginScreen() {
 
   const handleSkip = () => {
     console.log('Skipping login - going directly to app');
-    router.replace('/(tabs)/dashboard');
+    // Use push instead of replace to ensure navigation works
+    router.push('/(tabs)/dashboard');
   };
 
   return (
