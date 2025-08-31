@@ -44,6 +44,11 @@ export default function LoginScreen() {
     router.push('/signup');
   };
 
+  const handleSkip = () => {
+    console.log('Skipping login - going directly to app');
+    router.replace('/(tabs)/dashboard');
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <SafeAreaView style={styles.safeArea}>
@@ -110,6 +115,16 @@ export default function LoginScreen() {
             >
               <Text style={[styles.signUpText, { color: theme.colors.text }]}>Don&apos;t have an account? Sign Up</Text>
             </TouchableOpacity>
+
+            <View style={styles.skipContainer}>
+              <TouchableOpacity
+                style={styles.skipButton}
+                onPress={handleSkip}
+                testID="skip-button"
+              >
+                <Text style={[styles.skipText, { color: theme.colors.textSecondary }]}>Skip for now →</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </SafeAreaView>
@@ -184,6 +199,18 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     fontSize: 16,
+    fontWeight: '500',
+  },
+  skipContainer: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  skipButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  skipText: {
+    fontSize: 14,
     fontWeight: '500',
   },
 });
