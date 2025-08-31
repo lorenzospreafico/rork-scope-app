@@ -85,3 +85,30 @@ export async function getWorkoutsRange(fromISO: string, toISO: string) {
   if (error) throw error
   return data
 }
+
+export async function createWorkout({
+  scheduled_date,
+  title,
+  duration_min,
+  details
+}: {
+  scheduled_date: string
+  title: string
+  duration_min: number
+  details?: { notes?: string }
+}) {
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Not logged in')
+
+  const { data, error } = await supabase.from('workouts').insert({
+    user_id: user.id,
+    scheduled_date,
+    source: 'manual',
+    title,
+    duration_min,
+    details
+  }).select().single()
+  
+  if (error) throw error
+  return data
+}
