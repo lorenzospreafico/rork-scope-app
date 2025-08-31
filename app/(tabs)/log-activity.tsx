@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: 24,
-    marginBottom: 28,
+    marginBottom: 32,
   },
   sectionLabel: {
     fontSize: 18,
@@ -365,11 +365,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderRadius: 12,
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 60,
+    height: 48,
   },
   typeIcon: {
     fontSize: 18,
@@ -381,8 +381,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   separator: {
-    height: 20,
-    marginBottom: 8,
+    height: 24,
+    marginBottom: 16,
   },
   durationContainer: {
     flexDirection: 'row',
