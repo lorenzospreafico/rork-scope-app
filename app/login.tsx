@@ -27,10 +27,10 @@ export default function LoginScreen() {
       // Add delay for Android to ensure auth state is updated
       if (Platform.OS === 'android') {
         setTimeout(() => {
-          router.replace('/(tabs)/dashboard' as any);
+          router.replace('/(tabs)/dashboard');
         }, 200);
       } else {
-        router.replace('/(tabs)/dashboard' as any);
+        router.replace('/(tabs)/dashboard');
       }
     } catch (error: any) {
       console.log('Sign in error:', error);

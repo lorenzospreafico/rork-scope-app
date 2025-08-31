@@ -28,10 +28,10 @@ export default function SignUpScreen() {
       // Add delay for Android to ensure auth state is updated
       if (Platform.OS === 'android') {
         setTimeout(() => {
-          router.replace('/onboarding' as any);
+          router.replace('/onboarding');
         }, 200);
       } else {
-        router.replace('/onboarding' as any);
+        router.replace('/onboarding');
       }
     } catch (error: any) {
       console.log('Sign up error:', error);

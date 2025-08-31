@@ -8,14 +8,23 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 // Platform-specific configuration for better Android compatibility
 const supabaseOptions = {
   auth: {
-    // Increase timeout for Android
-    ...(Platform.OS === 'android' && {
-      detectSessionInUrl: false,
-      persistSession: true,
-      autoRefreshToken: true,
-    }),
+    detectSessionInUrl: false,
+    persistSession: true,
+    autoRefreshToken: true,
     storage: Platform.OS !== 'web' ? AsyncStorage : undefined,
   },
+  global: {
+    headers: {
+      'X-Client-Info': `expo-app/${Platform.OS}`,
+    },
+  },
+  ...(Platform.OS === 'android' && {
+    realtime: {
+      params: {
+        eventsPerSecond: 2,
+      },
+    },
+  }),
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, supabaseOptions)

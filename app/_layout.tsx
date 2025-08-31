@@ -13,8 +13,14 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: Platform.OS === 'android' ? 3 : 1,
+      retry: Platform.OS === 'android' ? 5 : 2,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       staleTime: 5 * 60 * 1000, // 5 minutes
+      networkMode: 'online',
+    },
+    mutations: {
+      retry: Platform.OS === 'android' ? 3 : 1,
+      networkMode: 'online',
     },
   },
 });

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Platform } from 'react-native';
 import { User, Session } from '@supabase/supabase-js';
 import createContextHook from '@nkzw/create-context-hook';
 import { supabase } from '@/lib/supabase';
@@ -30,7 +31,15 @@ export const [AuthProvider, useAuth] = createContextHook(() => {
     try {
       console.log('🔄 Refreshing auth state...');
       setState(prev => ({ ...prev, isLoading: true }));
-      const [user, session] = await Promise.all([getCurrentUser(), getSession()]);
+      
+      // Add timeout for Android
+      const timeout = Platform.OS === 'android' ? 10000 : 5000;
+      const authPromise = Promise.all([getCurrentUser(), getSession()]);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Auth timeout')), timeout)
+      );
+      
+      const [user, session] = await Promise.race([authPromise, timeoutPromise]) as [any, any];
       console.log('👤 Auth refresh result:', { user: user?.id, session: !!session });
       setState({
         user,

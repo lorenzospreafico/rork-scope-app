@@ -60,10 +60,10 @@ export default function SettingsScreen() {
               // Add delay for Android to ensure auth state is updated
               if (Platform.OS === 'android') {
                 setTimeout(() => {
-                  router.replace('/login' as any);
+                  router.replace('/login');
                 }, 200);
               } else {
-                router.replace('/login' as any);
+                router.replace('/login');
               }
             } catch (error: any) {
               Alert.alert('Error', error.message || 'Failed to sign out');
