@@ -74,3 +74,14 @@ export async function generatePlan(plan_id: string) {
   if (!resp.ok) throw new Error(json.error || 'Plan generation failed')
   return json
 }
+
+export async function getWorkoutsRange(fromISO: string, toISO: string) {
+  const { data, error } = await supabase
+    .from('workouts')
+    .select('*')
+    .gte('scheduled_date', fromISO)
+    .lte('scheduled_date', toISO)
+    .order('scheduled_date', { ascending: true })
+  if (error) throw error
+  return data
+}
