@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, Switch, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, Switch } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronRight, User, Calendar, Target, RefreshCw, TrendingUp, Moon, Sun, LogOut } from 'lucide-react-native';
+import { ChevronRight, User, Calendar, Target, RefreshCw, TrendingUp, Moon, Sun } from 'lucide-react-native';
 import { useTraining } from '@/hooks/training-store';
 import { useTheme } from '@/hooks/theme-store';
-import { useAuth } from '@/hooks/auth-store';
 import Button from '@/components/ui/Button';
 import { WeeklyCheckInModal } from '@/components/WeeklyCheckIn';
 
 export default function SettingsScreen() {
   const { userProfile, trainingPlan, submitWeeklyCheckIn } = useTraining();
   const { theme, isDark, toggleTheme } = useTheme();
-  const { signOut, user } = useAuth();
   const insets = useSafeAreaInsets();
   const [showCheckInModal, setShowCheckInModal] = useState<boolean>(false);
 
@@ -43,35 +41,6 @@ export default function SettingsScreen() {
 
   const handleCheckInClose = () => {
     setShowCheckInModal(false);
-  };
-
-  const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Sign Out', 
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await signOut();
-              // Add delay for Android to ensure auth state is updated
-              if (Platform.OS === 'android') {
-                setTimeout(() => {
-                  router.replace('/login');
-                }, 200);
-              } else {
-                router.replace('/login');
-              }
-            } catch (error: any) {
-              Alert.alert('Error', error.message || 'Failed to sign out');
-            }
-          }
-        },
-      ]
-    );
   };
 
   const getCurrentWeekNumber = (): number => {
@@ -162,35 +131,6 @@ export default function SettingsScreen() {
               <ChevronRight size={20} color={theme.colors.textSecondary} />
             </TouchableOpacity>
           ))}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Account</Text>
-          {user && (
-            <View style={[styles.settingItem, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
-              <View style={[styles.settingIcon, { backgroundColor: theme.colors.background }]}>
-                <User size={20} color={theme.colors.textSecondary} />
-              </View>
-              <View style={styles.settingContent}>
-                <Text style={[styles.settingTitle, { color: theme.colors.text }]}>Signed in as</Text>
-                <Text style={[styles.settingSubtitle, { color: theme.colors.textSecondary }]}>{user.email}</Text>
-              </View>
-            </View>
-          )}
-          <TouchableOpacity
-            style={[styles.settingItem, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
-            onPress={handleSignOut}
-            activeOpacity={0.8}
-          >
-            <View style={[styles.settingIcon, { backgroundColor: theme.colors.background }]}>
-              <LogOut size={20} color={theme.colors.textSecondary} />
-            </View>
-            <View style={styles.settingContent}>
-              <Text style={[styles.settingTitle, { color: theme.colors.text }]}>Sign Out</Text>
-              <Text style={[styles.settingSubtitle, { color: theme.colors.textSecondary }]}>Sign out of your account</Text>
-            </View>
-            <ChevronRight size={20} color={theme.colors.textSecondary} />
-          </TouchableOpacity>
         </View>
 
         <View style={styles.section}>

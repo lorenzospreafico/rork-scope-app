@@ -13,6 +13,7 @@ const ACTIVITY_TYPES = [
   { id: 'strength', name: 'Strength', icon: '💪' },
   { id: 'flexibility', name: 'Flexibility', icon: '🧘‍♀️' },
   { id: 'sports', name: 'Sports', icon: '⚽' },
+  { id: 'functional', name: 'Functional', icon: '🏋️‍♀️' },
 ];
 
 const INTENSITY_LEVELS = [
@@ -336,7 +337,7 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingHorizontal: 24,
-    marginBottom: 32,
+    marginBottom: 28,
   },
   sectionLabel: {
     fontSize: 18,
@@ -365,11 +366,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderRadius: 12,
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    height: 48,
+    height: 60,
   },
   typeIcon: {
     fontSize: 18,
@@ -381,8 +382,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   separator: {
-    height: 24,
-    marginBottom: 16,
+    height: 20,
+    marginBottom: 8,
   },
   durationContainer: {
     flexDirection: 'row',

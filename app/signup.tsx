@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '@/components/ui/Button';
-import { useAuth } from '@/hooks/auth-store';
+import { useTraining } from '@/hooks/training-store';
 import { useTheme } from '@/hooks/theme-store';
 
 export default function SignUpScreen() {
-  const { signUp } = useAuth();
+  const { signIn } = useTraining();
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('');
@@ -23,26 +23,19 @@ export default function SignUpScreen() {
 
     setIsLoading(true);
     
-    try {
-      await signUp(name.trim(), email.trim(), password.trim());
-      // Add delay for Android to ensure auth state is updated
-      if (Platform.OS === 'android') {
-        setTimeout(() => {
-          router.replace('/onboarding');
-        }, 200);
-      } else {
-        router.replace('/onboarding');
-      }
-    } catch (error: any) {
-      console.log('Sign up error:', error);
-      Alert.alert('Error', error.message || 'Failed to create account');
-    } finally {
+    // Simulate sign-up process
+    setTimeout(async () => {
+      await signIn({ fullName: name.trim(), email: email.trim() });
       setIsLoading(false);
-    }
+      // Navigate to onboarding after successful sign-up
+      router.replace('/onboarding');
+    }, 1000);
   };
 
-  const handleSignIn = () => {
-    router.push('/login');
+  const handleSignIn = async () => {
+    // For demo purposes, just sign in and navigate to onboarding
+    await signIn();
+    router.replace('/onboarding');
   };
 
   return (
