@@ -1021,6 +1021,20 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
     await saveUserProfile(updatedProfile);
   }, [userProfile, saveUserProfile]);
 
+  const resetOnboarding = useCallback(async () => {
+    try {
+      await Promise.all([
+        AsyncStorage.removeItem(STORAGE_KEYS.USER_PROFILE),
+        AsyncStorage.removeItem(STORAGE_KEYS.TRAINING_PLAN),
+      ]);
+      setUserProfile(null);
+      setTrainingPlan(null);
+      console.log('Onboarding data reset successfully');
+    } catch (error) {
+      console.error('Error resetting onboarding data:', error);
+    }
+  }, []);
+
   return useMemo(() => ({
     userProfile,
     trainingPlan,
@@ -1037,5 +1051,6 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
     submitWeeklyCheckIn,
     markCheckInPromptShown,
     logManualActivity,
-  }), [userProfile, trainingPlan, isAuthenticated, isLoading, saveUserProfile, saveTrainingPlan, completeWorkout, updateExerciseInWorkout, generateTrainingPlan, signIn, signOut, shouldShowWeeklyCheckIn, submitWeeklyCheckIn, markCheckInPromptShown, logManualActivity]);
+    resetOnboarding,
+  }), [userProfile, trainingPlan, isAuthenticated, isLoading, saveUserProfile, saveTrainingPlan, completeWorkout, updateExerciseInWorkout, generateTrainingPlan, signIn, signOut, shouldShowWeeklyCheckIn, submitWeeklyCheckIn, markCheckInPromptShown, logManualActivity, resetOnboarding]);
 });

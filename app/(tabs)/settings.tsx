@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button';
 import { WeeklyCheckInModal } from '@/components/WeeklyCheckIn';
 
 export default function SettingsScreen() {
-  const { userProfile, trainingPlan, submitWeeklyCheckIn } = useTraining();
+  const { userProfile, trainingPlan, submitWeeklyCheckIn, resetOnboarding } = useTraining();
   const { theme, isDark, toggleTheme } = useTheme();
   const insets = useSafeAreaInsets();
   const [showCheckInModal, setShowCheckInModal] = useState<boolean>(false);
@@ -23,7 +23,10 @@ export default function SettingsScreen() {
         { 
           text: 'Restart', 
           style: 'destructive',
-          onPress: () => router.push('/onboarding')
+          onPress: async () => {
+            await resetOnboarding();
+            router.push('/onboarding');
+          }
         },
       ]
     );
