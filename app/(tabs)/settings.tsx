@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert, Switch } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ChevronRight, User, Calendar, Target, RefreshCw, TrendingUp, Moon, Sun } from 'lucide-react-native';
+import { ChevronRight, User, Calendar, Target, RefreshCw, TrendingUp, Moon, Sun, LogOut } from 'lucide-react-native';
 import { useTraining } from '@/hooks/training-store';
 import { useTheme } from '@/hooks/theme-store';
 import Button from '@/components/ui/Button';
 import { WeeklyCheckInModal } from '@/components/WeeklyCheckIn';
 
 export default function SettingsScreen() {
-  const { userProfile, trainingPlan, submitWeeklyCheckIn, resetOnboarding } = useTraining();
+  const { userProfile, trainingPlan, submitWeeklyCheckIn, resetOnboarding, signOut } = useTraining();
   const { theme, isDark, toggleTheme } = useTheme();
   const insets = useSafeAreaInsets();
   const [showCheckInModal, setShowCheckInModal] = useState<boolean>(false);
@@ -29,15 +29,34 @@ export default function SettingsScreen() {
               await resetOnboarding();
               console.log('Data cleared successfully');
               
-              // Small delay to ensure state is properly reset
-              setTimeout(() => {
-                // Navigate to onboarding after clearing data
-                // Use replace to ensure we navigate to onboarding and clear navigation stack
-                router.replace('/onboarding');
-              }, 100);
+              // Navigate to signup screen since authentication is also cleared
+              router.replace('/signup');
             } catch (error) {
               console.error('Failed to reset onboarding:', error);
               Alert.alert('Error', 'Failed to restart onboarding. Please try again.');
+            }
+          }
+        },
+      ]
+    );
+  };
+
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Sign Out', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await signOut();
+              router.replace('/signup');
+            } catch (error) {
+              console.error('Failed to sign out:', error);
+              Alert.alert('Error', 'Failed to sign out. Please try again.');
             }
           }
         },
@@ -161,8 +180,22 @@ export default function SettingsScreen() {
             title="Restart Onboarding"
             onPress={handleRestartOnboarding}
             variant="outline"
-            style={styles.actionButton}
+            style={[styles.actionButton, { marginBottom: 12 }]}
           />
+          <TouchableOpacity
+            style={[styles.signOutButton, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}
+            onPress={handleSignOut}
+            activeOpacity={0.8}
+          >
+            <View style={[styles.settingIcon, { backgroundColor: theme.colors.background }]}>
+              <LogOut size={20} color={theme.colors.textSecondary} />
+            </View>
+            <View style={styles.settingContent}>
+              <Text style={[styles.settingTitle, { color: theme.colors.text }]}>Sign Out</Text>
+              <Text style={[styles.settingSubtitle, { color: theme.colors.textSecondary }]}>Return to login screen</Text>
+            </View>
+            <ChevronRight size={20} color={theme.colors.textSecondary} />
+          </TouchableOpacity>
         </View>
 
           <View style={styles.bottomPadding} />
@@ -265,5 +298,12 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 100,
+  },
+  signOutButton: {
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
