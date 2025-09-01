@@ -68,6 +68,8 @@ export default function OnboardingScreen() {
     if (!timePreference) return;
 
     const userProfile: UserProfile = {
+      fullName: 'User', // Default name for onboarding
+      email: 'user@example.com', // Default email for onboarding
       goals: selectedGoals,
       fitnessPillars: selectedPillars,
       selectedSport,
@@ -79,6 +81,7 @@ export default function OnboardingScreen() {
       existingSports,
       onboardingCompleted: true,
       weeklyCheckIns: [],
+      manualActivities: [],
     };
 
     await saveUserProfile(userProfile);
@@ -86,7 +89,7 @@ export default function OnboardingScreen() {
     const trainingPlan = generateTrainingPlan(userProfile);
     await saveTrainingPlan(trainingPlan);
     
-    router.replace('/(tabs)');
+    router.replace('/dashboard');
   };
 
   const handleBack = () => {
