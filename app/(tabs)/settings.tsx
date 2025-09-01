@@ -29,9 +29,12 @@ export default function SettingsScreen() {
               await resetOnboarding();
               console.log('Data cleared successfully');
               
-              // Navigate to onboarding immediately after clearing data
-              // Use push to ensure we navigate to onboarding
-              router.push('/onboarding');
+              // Small delay to ensure state is properly reset
+              setTimeout(() => {
+                // Navigate to onboarding after clearing data
+                // Use replace to ensure we navigate to onboarding and clear navigation stack
+                router.replace('/onboarding');
+              }, 100);
             } catch (error) {
               console.error('Failed to reset onboarding:', error);
               Alert.alert('Error', 'Failed to restart onboarding. Please try again.');
