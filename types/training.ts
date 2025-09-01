@@ -70,6 +70,8 @@ export interface WorkoutExercise {
   actualSets?: number;
   actualWeight?: number;
   notes?: string;
+  requiredEquipment?: string[]; // Equipment IDs needed for this exercise
+  alternativeExercises?: string[]; // Alternative exercise IDs if equipment not available
 }
 
 export interface ExerciseProgress {
@@ -178,6 +180,15 @@ export interface ManualActivity {
   loggedAt: string; // ISO date string when it was logged
 }
 
+export interface Equipment {
+  id: string;
+  name: string;
+  category: 'cardio' | 'strength' | 'flexibility' | 'functional';
+  description: string;
+  icon: string;
+  available: boolean;
+}
+
 export interface UserProfile {
   fullName: string;
   email: string;
@@ -190,6 +201,7 @@ export interface UserProfile {
   blackoutDates: string[];
   limitations: PhysicalLimitation[];
   existingSports: ExistingSport[];
+  availableEquipment: Equipment[];
   onboardingCompleted: boolean;
   weeklyCheckIns: WeeklyCheckIn[];
   lastCheckInPrompt?: string; // ISO date string

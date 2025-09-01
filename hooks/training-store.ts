@@ -39,6 +39,17 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
         if (!profile.manualActivities) {
           profile.manualActivities = [];
         }
+        // Ensure availableEquipment field exists for backward compatibility
+        if (!profile.availableEquipment) {
+          profile.availableEquipment = [{
+            id: 'bodyweight',
+            name: 'Bodyweight Only',
+            category: 'functional',
+            description: 'No equipment needed - use your body weight',
+            icon: 'user',
+            available: true,
+          }];
+        }
         setUserProfile(profile);
       }
       if (planData) {
@@ -285,7 +296,7 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
           const dayIndex = Math.floor((currentDate.getTime() - startDate.getTime()) / (24 * 60 * 60 * 1000));
           
           const isCombined = shouldCreateCombinedWorkout(profile.fitnessPillars, weekNumber, dayIndex);
-          const workoutExercises = generateExercises(profile.fitnessPillars, targetSessionDuration, weekNumber, dayIndex);
+          const workoutExercises = generateExercises(profile.fitnessPillars, targetSessionDuration, weekNumber, dayIndex, profile.availableEquipment);
           const actualDuration = calculateWorkoutDuration(workoutExercises);
           
           // Determine workout type based on exercises and focus
@@ -626,7 +637,7 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
     return 'cardio-strength';
   };
   
-  const generateExercises = (pillars: any[], targetDuration: number, weekNumber: number = 1, dayIndex: number = 0): WorkoutExercise[] => {
+  const generateExercises = (pillars: any[], targetDuration: number, weekNumber: number = 1, dayIndex: number = 0, availableEquipment?: any[]): WorkoutExercise[] => {
     // More sophisticated exercise selection with variety tracking
     let exerciseCount = Math.max(3, Math.min(8, Math.floor(targetDuration / 6)));
     const usedExercises = new Set<string>();
@@ -654,8 +665,11 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
       availableExercises = getDefaultExercisePool();
     }
     
+    // Filter exercises based on available equipment
+    const equipmentFilteredExercises = filterExercisesByEquipment(availableExercises, availableEquipment);
+    
     // Select exercises with better variety logic
-    const selectedExercises = selectVariedExercises(availableExercises, exerciseCount, targetDuration, usedExercises);
+    const selectedExercises = selectVariedExercises(equipmentFilteredExercises, exerciseCount, targetDuration, usedExercises);
     
     return selectedExercises;
   };
@@ -821,6 +835,31 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
     
     return exercises;
   };
+  
+  const filterExercisesByEquipment = (exercises: WorkoutExercise[], availableEquipment?: any[]): WorkoutExercise[] => {
+    if (!availableEquipment || availableEquipment.length === 0) {
+      // If no equipment specified, return bodyweight exercises only
+      return exercises.filter(exercise => 
+        !exercise.requiredEquipment || 
+        exercise.requiredEquipment.length === 0 ||
+        exercise.requiredEquipment.includes('bodyweight')
+      );
+    }
+    
+    const availableEquipmentIds = availableEquipment.map(eq => eq.id);
+    
+    return exercises.filter(exercise => {
+      // If exercise has no equipment requirements, it's always available
+      if (!exercise.requiredEquipment || exercise.requiredEquipment.length === 0) {
+        return true;
+      }
+      
+      // Check if all required equipment is available
+      return exercise.requiredEquipment.every(requiredId => 
+        availableEquipmentIds.includes(requiredId)
+      );
+    });
+  };
 
   const signIn = useCallback(async (userData?: { fullName: string; email: string }) => {
     try {
@@ -843,6 +882,14 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
           onboardingCompleted: false,
           weeklyCheckIns: [],
           manualActivities: [],
+          availableEquipment: [{
+            id: 'bodyweight',
+            name: 'Bodyweight Only',
+            category: 'functional',
+            description: 'No equipment needed - use your body weight',
+            icon: 'user',
+            available: true,
+          }],
         };
         
         await AsyncStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(basicProfile));

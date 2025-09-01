@@ -4,7 +4,7 @@ import { router, Stack } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/hooks/theme-store';
 import { useTraining } from '@/hooks/training-store';
-import { TrainingGoal, TimePreference, WeekDay, UserProfile, ExistingSport, SportChoice, FitnessPillar } from '@/types/training';
+import { TrainingGoal, TimePreference, WeekDay, UserProfile, ExistingSport, SportChoice, FitnessPillar, Equipment } from '@/types/training';
 import { HABIT_LEVELS } from '@/constants/training-data';
 import SportSelection from '@/components/onboarding/SportSelection';
 import PillarSelection from '@/components/onboarding/PillarSelection';
@@ -13,8 +13,9 @@ import ExistingSports from '@/components/onboarding/ExistingSports';
 import ScheduleSetup from '@/components/onboarding/ScheduleSetup';
 import InitialChoice from '@/components/onboarding/InitialChoice';
 import FitnessGoalSelection from '@/components/onboarding/FitnessGoalSelection';
+import EquipmentSelection from '@/components/onboarding/EquipmentSelection';
 
-type OnboardingStep = 'initial-choice' | 'sport-selection' | 'fitness-goals' | 'pillars' | 'time' | 'existing-sports' | 'schedule' | 'complete';
+type OnboardingStep = 'initial-choice' | 'sport-selection' | 'fitness-goals' | 'pillars' | 'time' | 'existing-sports' | 'schedule' | 'equipment' | 'complete';
 
 export default function OnboardingScreen() {
   const { saveUserProfile, generateTrainingPlan, saveTrainingPlan } = useTraining();
@@ -27,6 +28,8 @@ export default function OnboardingScreen() {
   const [fitnessGoal, setFitnessGoal] = useState<'strength' | 'health' | 'balanced' | undefined>(undefined);
   const [timePreference, setTimePreference] = useState<TimePreference | null>(null);
   const [existingSports, setExistingSports] = useState<ExistingSport[]>([]);
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment[]>([]);
+  const [availableDays, setAvailableDays] = useState<WeekDay[]>([]);
 
 
   const handleInitialChoiceNext = (choice: 'sport' | 'fitness') => {
@@ -63,22 +66,32 @@ export default function OnboardingScreen() {
     setCurrentStep('schedule');
   };
 
-  const handleScheduleNext = async (days: WeekDay[]) => {
+  const handleScheduleNext = (days: WeekDay[]) => {
+    setAvailableDays(days);
+    setCurrentStep('equipment');
+  };
+
+  const handleEquipmentNext = async (equipment: Equipment[]) => {
+    setSelectedEquipment(equipment);
     
     if (!timePreference) return;
 
     const userProfile: UserProfile = {
+      fullName: '',
+      email: '',
       goals: selectedGoals,
       fitnessPillars: selectedPillars,
       selectedSport,
       timePreference,
       habitLevel: HABIT_LEVELS[1], // Default to 'inconsistent'
-      availableDays: days,
+      availableDays: availableDays,
       blackoutDates: [],
       limitations: [],
       existingSports,
+      availableEquipment: equipment,
       onboardingCompleted: true,
       weeklyCheckIns: [],
+      manualActivities: [],
     };
 
     await saveUserProfile(userProfile);
@@ -112,6 +125,9 @@ export default function OnboardingScreen() {
         break;
       case 'schedule':
         setCurrentStep('existing-sports');
+        break;
+      case 'equipment':
+        setCurrentStep('schedule');
         break;
     }
   };
@@ -147,6 +163,9 @@ export default function OnboardingScreen() {
           )}
           {currentStep === 'schedule' && (
             <ScheduleSetup onNext={handleScheduleNext} onBack={handleBack} />
+          )}
+          {currentStep === 'equipment' && (
+            <EquipmentSelection onNext={handleEquipmentNext} onBack={handleBack} />
           )}
           </View>
         </SafeAreaView>
