@@ -1023,15 +1023,22 @@ export const [TrainingProvider, useTraining] = createContextHook(() => {
 
   const resetOnboarding = useCallback(async () => {
     try {
+      // Clear all stored data including authentication
       await Promise.all([
         AsyncStorage.removeItem(STORAGE_KEYS.USER_PROFILE),
         AsyncStorage.removeItem(STORAGE_KEYS.TRAINING_PLAN),
+        AsyncStorage.removeItem(STORAGE_KEYS.IS_AUTHENTICATED),
       ]);
+      
+      // Reset all state
       setUserProfile(null);
       setTrainingPlan(null);
-      console.log('Onboarding data reset successfully');
+      setIsAuthenticated(false);
+      
+      console.log('Onboarding data and authentication reset successfully');
     } catch (error) {
       console.error('Error resetting onboarding data:', error);
+      throw error;
     }
   }, []);
 

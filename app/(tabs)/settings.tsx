@@ -24,8 +24,21 @@ export default function SettingsScreen() {
           text: 'Restart', 
           style: 'destructive',
           onPress: async () => {
-            await resetOnboarding();
-            router.push('/onboarding');
+            console.log('Starting onboarding restart...');
+            try {
+              await resetOnboarding();
+              console.log('Data cleared successfully');
+              
+              // Small delay to ensure state updates are processed
+              setTimeout(() => {
+                console.log('Navigating to onboarding...');
+                // Use replace to reset the navigation stack completely
+                router.replace('/onboarding');
+              }, 100);
+            } catch (error) {
+              console.error('Failed to reset onboarding:', error);
+              Alert.alert('Error', 'Failed to restart onboarding. Please try again.');
+            }
           }
         },
       ]
